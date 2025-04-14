@@ -6,9 +6,9 @@ from scipy.interpolate import griddata
 
 
 def read_model(mo, yr, data_dir):
-    file = f'{data_dir}fesom_recon_oceanfilms_no_icemask/fesom_recon_oceanfilms_omf_res025_{yr}.nc'
+    file = f'{data_dir}oceanfilms_omf_res025_{yr}.nc'
     da_list = []
-
+    print(file)
     if os.path.exists(file):
         print('reading ', file, 'for interpolation with data month = ', mo)
         data = xr.open_dataset(file)
@@ -17,7 +17,7 @@ def read_model(mo, yr, data_dir):
 
 
 def get_mod_box(C_m, var, lat_obs, lon_obs):
-    bx_size = 2
+    bx_size = 7
     C_m_bx = C_m.where((C_m.lat < lat_obs[1] + bx_size) & (C_m.lat > lat_obs[0] - bx_size) &
                        (C_m.lon < lon_obs[1] + bx_size) & (C_m.lon > lon_obs[0] - bx_size), drop=True)
 

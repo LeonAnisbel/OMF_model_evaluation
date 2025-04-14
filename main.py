@@ -19,14 +19,18 @@ if __name__ == '__main__':
         pass
 
     plot_dir = './plots/'
-    data_dir = (f"/Users/leon/Desktop/Burrows_param/Burrows_Param_python/Burrows_param_FESON-RECOM_levante"
-                f"/Burrows_param_FESON-RECOM/")
-    # read_data_functions.read_do_monthly_mean_plot(data_dir, plot_dir,poles=False, plot_month=True)
+    data_dir = (f"/home/manuel/Downloads/Observ_sites_maps/Burows_param/")
 
-    dates, PASCAL, PI_ICE, data_CVAO, data_SVAL_14, data_SVAL_15, data_SVAL_18, data_rs = (
+    dates, PASCAL, PI_ICE, data_CVAO, data_SVAL_15, data_MH_18 = (
         read_data_functions.read_obs_data_loc())
-    # OMF = read_data_functions.read_model_data(data_dir, dates, exp)
 
+    print('MaceHead')
+    pd_obs_mo_MH_18 = interp_func.interp_omf_stations(data_MH_18,
+                                                        'MH',
+                                                        data_dir)
+    pd_obs_mo_MH_18.to_pickle('tot_omf_MH.pkl')
+
+    print('Pascal, Pice')
     pd_obs_mo_pi_ice = interp_func.assign_loc_ship(PI_ICE[3],
                                                    PI_ICE[1],
                                                    PI_ICE[0],
@@ -43,7 +47,7 @@ if __name__ == '__main__':
     #                                                'RS',
     #                                                data_dir)
     print('CVAO')
-    pd_obs_mo_cvao = interp_func.interp_omf_stations(data_CVAO[1],
+    pd_obs_mo_cvao = interp_func.interp_omf_stations(data_CVAO[0],
                                                      'CVAO',
                                                      data_dir)
 
@@ -53,9 +57,12 @@ if __name__ == '__main__':
     # pd_obs_mo_sval_14 = interp_func.interp_omf_stations(data_SVAL_14[1],
     #                                                     'SVD14',
     #                                                     data_dir)
-    pd_obs_mo_sval_15 = interp_func.interp_omf_stations(data_SVAL_15[1],
+    pd_obs_mo_sval_15 = interp_func.interp_omf_stations(data_SVAL_15[0],
                                                         'SVD15',
                                                         data_dir)
+
+
+
     # print(pd_obs_mo_sval_15['OMF_mod_pro'])
     #
     # pd_obs_mo_sval_18 = interp_func.interp_omf_stations(data_SVAL_18[1],
