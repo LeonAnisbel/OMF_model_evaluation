@@ -19,7 +19,7 @@ def read_obs_data_loc():
     """
 
     #### Reading station locations
-    main_dir = '../../'
+    main_dir = 'Observation_data/'
     loc_dir = 'Aerosol_sample_coordinates/'
     files = ['PASCAL_lat_lon_aer.csv', 'PI_ICE_lat_lon_aer.csv']
     pol_data = 'AER_OMF_pol_lip_pro_all_sizes.csv'
