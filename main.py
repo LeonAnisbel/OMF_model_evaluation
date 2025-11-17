@@ -28,13 +28,6 @@ if __name__ == '__main__':
         read_data_functions.read_obs_data_loc())
 
     print('MaceHead')
-    # Interpolate model results to Mace Head location and dates (2002-2009, total )
-    pd_obs_mo_MH_02_09 = interp_func.interp_omf_stations(data_MH_02_09,
-                                                        'MH0209',
-                                                        data_dir,
-                                                        filter_exposition=True)
-    pd_obs_mo_MH_02_09.to_pickle(f'./pkl_files/{exp_biom}tot_omf_MH_Rinaldi.pkl')
-
     # Interpolate model results to Mace Head location and dates (2018)
     pd_obs_mo_MH_18 = interp_func.interp_omf_stations(data_MH_18,
                                                         'MH',
