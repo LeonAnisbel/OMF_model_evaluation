@@ -1,15 +1,23 @@
 import xarray as xr
-import glob, os
-from matplotlib import cm
-import interp_func
-import plot_functions
-import numpy as np
+import os
 import codecs
 import pandas as pd
 import itertools
 
-################################
 def read_obs_data_loc():
+    """
+    Read observational data from various campaigns
+    :returns dates: list of dates
+             PASCAL: PASCAL campaign data list (len=4) of dataframes
+                    [ship location, sub-micron size, super-micron size, total size]
+             PI_ICE: PI_ICE campaign data list (len=4) of dataframes
+                    [ship location, sub-micron size, super-micron size, total size]
+             CVAO: CVAO data list (len=2)  of dataframes [sub-micron size, total size]
+             SVAL_15: Svalbard data list (len=2) of dataframes [sub-micron size, total size]
+             data_MH_18: Mace Head data sub-micron size dataframes
+             data_AI_02_09: Amsterdam Island data sub-micron size dataframes
+    """
+
     #### Reading station locations
     main_dir = '../../'
     loc_dir = 'Aerosol_sample_coordinates/'
@@ -60,6 +68,7 @@ def read_obs_data_loc():
     data_SVAL_15_tot = data[data['Station_sizes'] == 'Sval_0-10µm_15']
 
     data_MH_18 = data[data['Station_sizes'] == 'MH_submicron']
+    data_AI_02_09 = data[data['Station_sizes'] == 'AI']
 
 
     dates = []
@@ -74,10 +83,26 @@ def read_obs_data_loc():
     CVAO = [data_CVAO_subm_2, data_CVAO_tot]
     SVAL_15 = [data_SVAL_15_subm_2, data_SVAL_15_tot]
 
-    return dates, PASCAL, PI_ICE, CVAO, SVAL_15, data_MH_18
+    return dates, PASCAL, PI_ICE, CVAO, SVAL_15, data_MH_18, data_AI_02_09
 
+def file_var(ds, var):
+    """
+    Get dataArrays from dataset
+    :var ds: dataset
+    :param var: variable name
+    :return: dataArray
+    """
+    fi_va = [f[var] for f in ds]
+    return fi_va
 
 def read_model_data(data_dir, dates, exp):
+    """
+    Read OMF from model
+    :param data_dir: data directory
+    :param dates: list containing months
+    :param exp: experiment name
+    :return: list of OMF data of biomolecules
+    """
     omf_files = []
     emi_files = []
     wind_files = []
@@ -88,20 +113,26 @@ def read_model_data(data_dir, dates, exp):
             mo_str = f'{d[0]}'
 
         if os.path.exists(f'{data_dir}{exp}_{d[1]}{mo_str}.01_ham.nc'):
-            da = xr.open_mfdataset(f'{data_dir}{exp}_{d[1]}{mo_str}.01_ham.nc', concat_dim='time', combine='nested')
+            da = xr.open_mfdataset(f'{data_dir}{exp}_{d[1]}{mo_str}.01_ham.nc',
+                                   concat_dim='time',
+                                   combine='nested')
             omf_files.append(da)
-            da = xr.open_mfdataset(f'{data_dir}{exp}_{d[1]}{mo_str}.01_emi.nc', concat_dim='time', combine='nested')
+            da = xr.open_mfdataset(f'{data_dir}{exp}_{d[1]}{mo_str}.01_emi.nc',
+                                   concat_dim='time',
+                                   combine='nested')
             emi_files.append(da)
-            da = xr.open_mfdataset(f'{data_dir}{exp}_{d[1]}{mo_str}.01_echam.nc', concat_dim='time', combine='nested')
+            da = xr.open_mfdataset(f'{data_dir}{exp}_{d[1]}{mo_str}.01_echam.nc',
+                                   concat_dim='time',
+                                   combine='nested')
             wind_files.append(da)
 
-    def file_var(files, var):
-        fi_va = [f[var] for f in files]
-        return fi_va
 
-    omf_pol = xr.concat(file_var(omf_files, 'OMF_POL'), dim='time')
-    omf_pro = xr.concat(file_var(omf_files, 'OMF_PRO'), dim='time')
-    omf_lip = xr.concat(file_var(omf_files, 'OMF_LIP'), dim='time')
+    omf_pol = xr.concat(file_var(omf_files, 'OMF_POL'),
+                        dim='time')
+    omf_pro = xr.concat(file_var(omf_files, 'OMF_PRO'),
+                        dim='time')
+    omf_lip = xr.concat(file_var(omf_files, 'OMF_LIP'),
+                        dim='time')
 
     omf = [omf_pol, omf_pro, omf_lip]
 
@@ -109,11 +140,24 @@ def read_model_data(data_dir, dates, exp):
 
 
 def read_model_spec_data(file):
-    return xr.open_mfdataset(file, concat_dim='time', combine='nested')
+    """
+    This function reads (with dask) the data from a certain file type group
+    :param file: files to read
+    :return: dataset
+    """
+    return xr.open_mfdataset(file,
+                             concat_dim='time',
+                             combine='nested')
 
 
 # reading data
 def read_nc_ds(files, path):
+    """
+    Reading model data from netCDF files
+    :param files: list of files to read
+    :param path: path to netCDF file
+    :return: dataset
+    """
     data_model = []
     data_month = [[] for i in range(12)]
     da_month_mean = [[] for i in range(12)]

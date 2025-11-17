@@ -8,10 +8,17 @@ from scipy.stats import linregress
 import cartopy.crs as ccrs
 import codecs
 
+import global_vars
+
 
 ## Statistical indicators
 def equat_stat(model, observ):
-    """Function to compute statistics"""
+    """
+    Function to compute statistics
+    :var model: list of interpolated model values
+    :var observ: list of observation values
+    :return: list of statistics [rmse, pearsons_coeff, pval_corr, mean_bias, nmb]
+    """
     # Root Mean Squared Error
     model, observ = np.array(model), np.array(observ)
     rmse = np.sqrt(mean_squared_error(model, observ))
@@ -42,7 +49,13 @@ def equat_stat(model, observ):
 
 
 def function_plot_two_pannel(ax, location, names):
-    """Creates map with station locations"""
+    """
+    Creates map with station locations
+    :var ax: matplotlib axes object
+    :var location: list of locations
+    :var names: list of names
+    :return: matplotlib object
+    """
 
     ax.coastlines(resolution='110m', color='gray')
     ax.set_extent([-100, 40, -90, 90])
@@ -92,7 +105,20 @@ def function_plot_two_pannel(ax, location, names):
 
 # %%
 def plot_text(dict_macrom, ax, c_na, ID, l0, l1, h1, mol_name, stat_name, loc_factor):
-    """Creates the box plot figure with all biomolecules groups separeted by dashed lines """
+    """
+    Creates the box plot figure with all biomolecules groups separated by dashed lines
+    :var dict_macrom: dictionary with model and observation values
+    :var ax: matplotlib axes object
+    :var c_na: biomolecule name
+    :var ID:
+    :var l0: location of biomolecule name in plot
+    :var l1: position (x) of statistics in plot
+    :var h1:  position (y) of statistics in plot
+    :var mol_name: biomolecule full name
+    :var stat_name: station labels
+    :var loc_factor: factor to position the labels for each panel
+    :return: None
+    """
     mod_data = dict_macrom[dict_macrom[''] == 'Model']
     obs_data = dict_macrom[dict_macrom[''] == 'Observation']
     stat_all = equat_stat(mod_data[c_na], obs_data[c_na])
@@ -100,17 +126,35 @@ def plot_text(dict_macrom, ax, c_na, ID, l0, l1, h1, mol_name, stat_name, loc_fa
     box2 = f'NMB={np.round(stat_all[-1], 2)} '
     print('PLOT text', box2, len(obs_data))
     box1 = mol_name
-    ax.text(l0, 50, box1, fontsize='14', weight='bold', bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 10})
-    ax.text(l1, h1, box2, fontsize='12')
+    ax.text(l0,
+            50,
+            box1,
+            fontsize='14',
+            weight='bold',
+            bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 10})
+    ax.text(l1,
+            h1,
+            box2,
+            fontsize='12')
 
     for idx, s in enumerate(stat_name):
         n = str(len(obs_data[obs_data['Measurements'] == s]))
 
-        ax.text(idx + loc_factor, 0.35, f'n= {n}', fontsize='12')
+        ax.text(idx + loc_factor,
+                0.35,
+                f'n= {n}',
+                fontsize='12')
 
 
 def box_plot_vert(ax, dict_df, ID, lim):
-    """Calls functions to create box plot and calculate statistics indices """
+    """
+    Calls functions to create and customize box plot with all biomolecules groups separated by dashed lines
+    :var ax: matplotlib axes object
+    :var dict_df: pandas dataframe with model and observation values
+    :var ID: list of species ids
+    :var lim: y-axis limit
+    :return: None
+    """
 
     c_na = 'Concentration in the ocean ($mmol\ C\ m^{-3}$)'
     states_palette = sns.color_palette("YlGnBu", n_colors=2)
@@ -135,8 +179,7 @@ def box_plot_vert(ax, dict_df, ID, lim):
             dict_stat = dict_molec[dict_molec['Measurements'] == sta]
             mod_data = dict_stat[dict_stat[''] == 'Model']
             obs_data = dict_stat[dict_stat[''] == 'Observation']
-            print(molec, sta)
-            stat_all = equat_stat(mod_data[c_na], obs_data[c_na])
+
 
     pol_df = dict_df[dict_df['Macromolecules'] == 'pol  DCCHO [µMC]']
     pro_df = dict_df[dict_df['Macromolecules'] == 'pro  DCAA [µMC]']
@@ -151,29 +194,40 @@ def box_plot_vert(ax, dict_df, ID, lim):
               'PL$_{sw}$|PG$_{sw}$', stations['lip  PG'], 10.8)
 
     # Customizing axes
-    ax.tick_params(axis='both', labelsize='16')
+    ax.tick_params(axis='both',
+                   labelsize='16')
     ax.yaxis.get_label().set_fontsize(16)
-    ax.set_xlabel('', fontsize=16)
-    ax.set_ylabel('Concentration in the ocean (mmol C m$^{-3}$)', fontsize=16)
+    ax.set_xlabel('',
+                  fontsize=16)
+    ax.set_ylabel('Concentration in the ocean (mmol C m$^{-3}$)',
+                  fontsize=16)
     ax.set_yscale('log')
-    ax.grid(linestyle='--', linewidth=0.4)
+    ax.grid(linestyle='--',
+            linewidth=0.4)
     ax.set_ylim(lim)
 
     # dotted lines to separate groups
-    ax.axvline(4.5, color=".3", dashes=(2, 2))
-    ax.axvline(10.5, color=".3", dashes=(2, 2))
+    ax.axvline(4.5,
+               color=".3",
+               dashes=(2, 2))
+    ax.axvline(10.5,
+               color=".3",
+               dashes=(2, 2))
 
-    ax.legend(loc="lower left", fontsize='16')
+    ax.legend(loc="lower left",
+              fontsize='16')
 
 if __name__ == '__main__':
     data_dir = '/Users/Leon/Desktop/Folder_from_linux/Downloads/Observ_sites_maps/GMD_paper/Zenodo/pd_files/'
-
-    df_all_groups = pd.read_pickle(data_dir+"model_seawater.pkl")
-
+    df_all_groups = pd.read_pickle(f'{data_dir}model_seawater.pkl')
     file_water = "/Users/Leon/Desktop/Folder_from_linux/Downloads/Observ_sites_maps/SEAWATER_data.csv"
-    doc = codecs.open(file_water, 'r', 'UTF-8')  # open for reading with "universal" type set 'rU'
-    data_water = pd.read_csv(doc, sep=',')
 
+    # Creates plot used in Doctoral Thesis Chapter 5
+    # Read observation data to retrieve stations locations
+    doc = codecs.open(file_water,
+                      'r',
+                'UTF-8')  # open for reading with "universal" type set 'rU'
+    data_water = pd.read_csv(doc, sep=',')
     WAP = data_water[data_water['Event'] == 'WAP']
     NAO = data_water[data_water['Event'] == 'PASCAL']
     CVAO = data_water[data_water['Event'] == 'CVAO']
@@ -200,14 +254,22 @@ if __name__ == '__main__':
              '', 'PUR12\nPUR17',
              'NWAO\nSB', 'SATL']
 
-    #### Plotting data
+    #### Create figure of box plot (model and observations) and a second panel with map locations
     fig, ax0 = plt.subplots(figsize=(15, 8))
     proj = ccrs.PlateCarree()
-    ax1 = fig.add_axes([0.85, 0.33, 0.4, 0.46], projection=proj)
-
-    box_plot_vert(ax0, df_all_groups,
+    ax1 = fig.add_axes([0.85, 0.33, 0.4, 0.46],
+                       projection=proj)
+    # plot values
+    box_plot_vert(ax0,
+                  df_all_groups,
                   ['pol', 'pro', 'lip'],
                   [1e-2, 1e2])
-    function_plot_two_pannel(ax1, loc_list, names)
-    plt.savefig(f'All_groups_box_map_plot.png', dpi=300, bbox_inches="tight")
+
+    #plot map locations
+    function_plot_two_pannel(ax1,
+                             loc_list,
+                             names)
+    plt.savefig(f'{global_vars.plot_dir}/All_groups_box_map_plot.png',
+                dpi=300,
+                bbox_inches="tight")
     plt.close()

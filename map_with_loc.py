@@ -5,6 +5,12 @@ import read_data_functions
 import itertools
 
 def get_list(var_list,names):
+    """
+    Creates list with lat, lon locations of campaigns ID indicated in names
+    :var var_list: dataframe containing lat and lon metadata for each campaign
+    :param names: list of names of campaigns IDs
+    :return var_list: list of lists containing lat and lon for each campaign
+    """
     loc_list = []
 
     for i,loc in enumerate(var_list):
@@ -19,9 +25,10 @@ def get_list(var_list,names):
     return loc_list
 
 
-
-def loc_map_plot(mo, yr, PASCAL, PI_ICE, CVAO,plot_dir):
-
+def loc_map_plot(mo, yr, PASCAL, PI_ICE, CVAO, plot_dir):
+    """
+    Groups data and calls the function to plot station or campaign location for a certain biomolecule
+    """
     exp = 'ac3_arctic'
     data_dir = f"/scratch/b/b381361/{exp}/"
     if mo < 10:
@@ -54,31 +61,57 @@ def loc_map_plot(mo, yr, PASCAL, PI_ICE, CVAO,plot_dir):
 
 # defining function 1 column plot, 3 rows
 def plot_map_loc(C, name, location, names,plot_dir):
-    # fig, ax = plt.subplots(1, 1,  # define figure with cartopy
-    #                          subplot_kw={'projection': ccrs.Robinson()}, figsize=(5, 6))
-    # ax.set_extent([-40, 20, 0, 30], ccrs.PlateCarree())
-
+    """
+    Creates map with campaign locations
+    :var C: dataArray containing lat and lon
+    :var names: name of biomolecule
+    :var location: list containing lat and lon metadata for each campaign and biomolecule
+    :var names: list of names of campaigns IDs
+    :var plot_dir: directory to save plots
+    :return : None
+    """
     fig, ax = plt.subplots(1, 1,  # define figure with cartopy
-                             subplot_kw={'projection': ccrs.NorthPolarStereo()}, figsize=(5, 6))
-    ax.set_extent([-180, 180, 50, 90], ccrs.PlateCarree())
+                             subplot_kw={'projection': ccrs.NorthPolarStereo()},
+                           figsize=(5, 6))
+    ax.set_extent([-180, 180, 50, 90],
+                  ccrs.PlateCarree())
 
-    plt.subplots_adjust(left=0, right=1, top=0.9, bottom=0)
-    fig.suptitle(name, fontsize=20)
+    plt.subplots_adjust(left=0,
+                        right=1,
+                        top=0.9,
+                        bottom=0)
+    fig.suptitle(name,
+                 fontsize=20)
 
-    im = ax.pcolormesh(C.lon, C.lat, C,
-                                cmap="Blues", transform=ccrs.PlateCarree())
+    im = ax.pcolormesh(C.lon,
+                       C.lat,
+                       C,
+                       cmap="Blues",
+                       transform=ccrs.PlateCarree())
     # ax.set_title(names, fontsize='14')
     ax.coastlines()
-    loc_plot(location, names, ax, fig)
+    loc_plot(location,
+             names,
+             ax,
+             fig)
 
-    fig.colorbar(im, orientation="horizontal", label="$mmol C m^{-3}$")
+    fig.colorbar(im,
+                 orientation="horizontal",
+                 label="$mmol C m^{-3}$")
     plt.tight_layout()
-    plt.savefig(plot_dir + 'Sfc_conc_plots/' + name + '_sfc_map_loc.png', dpi=300, bbox_inches="tight")
-    plt.show()
-
+    plt.savefig(plot_dir + 'Sfc_conc_plots/' + name + '_sfc_map_loc.png',
+                dpi=300,
+                bbox_inches="tight")
 
 
 def loc_plot(location, names, ax, fig):
+    """
+    Plots dots in map to indicate station or campaign locations
+    :var location: list containing lat and lon metadata for each campaign
+    :var names: list of names of campaigns IDs corresponding to each [lat, lon]
+    :var ax: matplotlib axes
+    :return :None
+    """
     ind = 0
     for loc, n in zip(location, names):
 
