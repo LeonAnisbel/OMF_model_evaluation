@@ -6,9 +6,7 @@ import glob, os
 import general_func
 import map_with_loc
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    # data paths
     try:
         os.mkdir('plots')
     except OSError:
@@ -18,8 +16,9 @@ if __name__ == '__main__':
     except OSError:
         pass
 
-    plot_dir = './plots/'
-    data_dir = (f"/home/manuel/Downloads/Observ_sites_maps/Burows_param/")
+    plot_dir = global_vars.plot_dir
+    data_dir = (global_vars.data_dir)
+    exp_biom = global_vars.exp_biomolecules
 
     dates, PASCAL, PI_ICE, data_CVAO, data_SVAL_15, data_MH_18 = (
         read_data_functions.read_obs_data_loc())

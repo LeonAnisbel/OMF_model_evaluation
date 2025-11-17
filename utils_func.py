@@ -1,12 +1,16 @@
 import numpy as np
 import xarray as xr
 import os
+
+import global_vars
 import read_data_functions
 from scipy.interpolate import griddata
 
 
 def read_model(mo, yr, data_dir):
     file = f'{data_dir}oceanfilms_omf_res025_{yr}.nc'
+    file = f'{data_dir}{global_vars.exp_biomolecules}oceanfilms_omf_res025_{yr}.nc'
+
     da_list = []
     print(file)
     if os.path.exists(file):
@@ -17,7 +21,8 @@ def read_model(mo, yr, data_dir):
 
 
 def get_mod_box(C_m, var, lat_obs, lon_obs):
-    bx_size = 7
+    bx_size = 3
+    print('getting box for ', lat_obs, lon_obs)
     C_m_bx = C_m.where((C_m.lat < lat_obs[1] + bx_size) & (C_m.lat > lat_obs[0] - bx_size) &
                        (C_m.lon < lon_obs[1] + bx_size) & (C_m.lon > lon_obs[0] - bx_size), drop=True)
 
