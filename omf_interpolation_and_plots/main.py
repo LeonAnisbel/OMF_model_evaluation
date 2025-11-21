@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # Interpolate model results to Mace Head location and dates (2018)
     pd_obs_mo_MH_18 = interp_func.interp_omf_stations(data_MH_18,
                                                         'MH',
-                                                        data_dir)
+                                                      data_dir)
     pd_obs_mo_MH_18.to_pickle(f'./pkl_files/{exp_biom}tot_omf_MH.pkl')
 
 

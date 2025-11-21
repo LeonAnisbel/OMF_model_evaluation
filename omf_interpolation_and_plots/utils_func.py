@@ -3,11 +3,17 @@ import xarray as xr
 import os
 
 import global_vars
-import read_data_functions
 from scipy.interpolate import griddata
 
 
 def read_model(mo, yr, data_dir):
+    """
+    Reads the model data for the specific month and year of the observational data
+    :param mo: month of the observation
+    :param yr: year of the observation
+    :param data_dir: path to model data
+    :return: datasets of aerosol concentration and air density
+    """
     file = f'{data_dir}oceanfilms_omf_res025_{yr}.nc'
     file = f'{data_dir}{global_vars.exp_biomolecules}oceanfilms_omf_res025_{yr}.nc'
 
@@ -21,6 +27,15 @@ def read_model(mo, yr, data_dir):
 
 
 def get_mod_box(C_m, var, lat_obs, lon_obs):
+    """
+    Defines a box around the station location (lat_obs, lon_obs) to consider for the interpolation
+    Defines a box around the station location (lat_obs, lon_obs) to consider for the interpolation
+    :var ds: xarray dataset
+    :param var: variable name
+    :var lat_obs: latitude of station location
+    :var lon_obs: longitude of station location
+    :return: latitude and longitude values defined as a box around the station location leaving out nans
+    """
     bx_size = 3
     print('getting box for ', lat_obs, lon_obs)
     C_m_bx = C_m.where((C_m.lat < lat_obs[1] + bx_size) & (C_m.lat > lat_obs[0] - bx_size) &
@@ -48,6 +63,16 @@ def get_mod_box(C_m, var, lat_obs, lon_obs):
 
 
 def interp_func(mod_ds, var, obs_lon, obs_lat, obs_lon_mi_ma, obs_lat_mi_ma):
+    """
+    This function will create and adapt the required grids for the interpolation
+    :var mod_ds: xarray dataset with aerosol mass
+    :param var: variable name (aerosol species name in ECHAM-HAM)
+    :var obs_lat: latitude of station location
+    :var obs_lon: longitude of station location
+    :var obs_lon_mi_ma: longitude range (relevant for ship-based campaigns)
+    :var obs_lat_mi_ma: latitude range (relevant for ship-based campaigns)
+    :return: interpolated value
+    """
     points, values = get_mod_box(mod_ds, var, obs_lat_mi_ma, obs_lon_mi_ma)
 
     grid_lon, grid_lat = np.meshgrid(obs_lon, obs_lat)

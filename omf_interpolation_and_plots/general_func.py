@@ -1,6 +1,5 @@
 import plot_functions
 import pandas as pd
-import numpy as np
 
 
 def pd_combine_pol(OMF_pd, plot_dir):
@@ -208,7 +207,7 @@ def create_dataframe(omf_pd_nan, mod, obs, mac_na):
 
 def rename_func(data_pd, na, new_na):
     """
-    Rename dataframe argument names
+    Renames columns of the data_pd data frame from the old name "na" to "new_na"
     :var data_pd: dataframe
     :param na: argument name to replace
     :var new_na: new name to fill with updated "na" name
@@ -267,10 +266,10 @@ def pd_combine_all(dicc_po_to, dicc_pr, dicc_li):
                                 'WAP ')
 
     plot_functions.box_plot_vert(pd.concat([omf_pd_po, omf_pd_pr_new, omf_pd_li_new, omf_pd_to_new]),
-                  mac_names,
-              ['pol', 'pro', 'lip'],
+                                 mac_names,
+                                 ['pol', 'pro', 'lip'],
             'All_groups',
-             [1e-5, 1e1])
+                                 [1e-5, 1e1])
 
     omf_pd_po.to_pickle('./pkl_files/poly_omf.pkl')
     omf_pd_pr_new.to_pickle('./pkl_files/prot_omf.pkl')
